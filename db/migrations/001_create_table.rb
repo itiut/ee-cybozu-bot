@@ -12,9 +12,15 @@ Sequel.migration do
       String :content
       Time :issued_time
     end
+
+    create_table(:tweet_queues) do
+      primary_key :id
+      foreign_key :notice_id, :notices
+    end
   end
 
   down do
+    drop_table(:tweet_queues)
     drop_table(:notices)
     drop_table(:groups)
   end
