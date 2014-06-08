@@ -63,8 +63,9 @@ class Crawler
       title = @notice_page.search('div[@class=marginFull]/table/tr/td/font/b').children.last.text
       content = @notice_page.search('tt').first.text.split.join.gsub(/[　\s]+/, ' ')
       issued_time = Time.parse(@notice_page.search('body').children[20].text.split[1..2].join)
+      url = @notice_page.uri.to_s
 
-      { id: id, group_id: group_id, title: title, content: content, issued_time: issued_time }
+      { id: id, group_id: group_id, title: title, content: content, issued_time: issued_time, url: url }
     end
   end
 end

@@ -11,6 +11,7 @@ Sequel.migration do
       String :title
       String :content
       Time :issued_time
+      String :url
     end
 
     create_table(:tweet_queues) do
