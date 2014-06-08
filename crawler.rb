@@ -4,6 +4,7 @@ require 'pry-byebug'
 require 'rb-readline'
 require_relative 'db/connection'
 require_relative 'models/notice'
+require_relative 'models/tweet_queue'
 
 agent = Mechanize.new
 agent.user_agent_alias = 'Windows IE 9'
@@ -37,6 +38,10 @@ bulletin_page.search('table.dataList//a').each do |anchor|
       title: title,
       content: content,
       issued_time: issued_time
+    )
+
+    TweetQueue.create(
+      notice_id: notice.id
     )
 
     puts "New notice: #{notice.id}, #{notice.group_id}, #{notice.title}, #{notice.issued_time}"
