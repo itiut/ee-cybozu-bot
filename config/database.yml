@@ -1,0 +1,13 @@
+development:
+  adapter: 'mysql2'
+  host: 'localhost'
+  user: 'ee_cybozu_bot'
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  database: 'ee_cybozu_bot'
+
+production:
+  adapter: 'mysql2'
+  host: us-cdbr-east-06.cleardb.net
+  user: b6166b494c662b
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  databse: heroku_0e75c4ae82c64af
