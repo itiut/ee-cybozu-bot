@@ -23,9 +23,7 @@ class Crawler
 
       next if Notice[params[:id]]
 
-      notice = Notice.create(params)
-      TweetQueue.create(notice_id: notice.id)
-      puts "New notice: #{notice.id}, #{notice.group_id}, #{notice.title}, #{notice.issued_time}"
+      create_notice_and_push_to_queue(params)
     end
   end
 
@@ -43,6 +41,12 @@ class Crawler
     bulletin_url = BASE_URL + '?page=BulletinIndex'
     bulletin_page = @agent.get(bulletin_url)
     bulletin_page.search('table.dataList//a').map { |anchor| anchor[:href] }
+  end
+
+  def create_notice_and_push_to_queue(params)
+    notice = Notice.create(params)
+    TweetQueue.create(notice_id: notice.id)
+    puts "New notice: #{notice.id}, #{notice.group_id}, #{notice.title}, #{notice.issued_time}"
   end
 
   class Parser
