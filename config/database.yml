@@ -10,4 +10,4 @@ production:
   host: us-cdbr-east-06.cleardb.net
   user: b6166b494c662b
   password: <%= ENV['DATABASE_PASSWORD'] %>
-  databse: heroku_0e75c4ae82c64af
+  database: heroku_0e75c4ae82c64af
