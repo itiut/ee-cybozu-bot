@@ -6,44 +6,65 @@ require_relative 'db/connection'
 require_relative 'models/notice'
 require_relative 'models/tweet_queue'
 
-agent = Mechanize.new
-agent.user_agent_alias = 'Windows IE 9'
+class Crawler
+  BASE_URL = 'https://www.ee.t.u-tokyo.ac.jp/cgi-bin/cb6/ag.cgi'
 
-login_url = 'https://www.ee.t.u-tokyo.ac.jp/cgi-bin/cb6/ag.cgi'
-login_page = agent.get(login_url)
+  def initialize(id, password)
+    @id, @password = id, password
+    @agent = Mechanize.new
+    @agent.user_agent_alias = 'Windows IE 9'
+    login!
+  end
 
-login_form = login_page.forms[0]
-login_form._ID = ENV['LOGIN_ID']
-login_form.Password = ENV['LOGIN_PASSWORD']
+  def crawl_head_notices
+    head_notice_urls.each do |url|
+      notice_page = @agent.get(url)
+      params = Parser.new(notice_page).parse
 
-agent.submit(login_form)
+      next if Notice[params[:id]]
 
-bulletin_url = 'ag.cgi?page=BulletinIndex'
-bulletin_page = agent.get(bulletin_url)
+      notice = Notice.create(params)
+      TweetQueue.create(notice_id: notice.id)
+      puts "New notice: #{notice.id}, #{notice.group_id}, #{notice.title}, #{notice.issued_time}"
+    end
+  end
 
-bulletin_page.search('table.dataList//a').each do |anchor|
-  view_page = agent.get(anchor[:href])
-  id = /&bid=(\d+)/.match(view_page.uri.to_s)[1]
+  private
 
-  unless Notice[id]
-    gid_match = /&gid=(\d+)/.match(view_page.uri.to_s)
-    group_id = gid_match ? gid_match[1] : 0
-    title = view_page.search('div[@class=marginFull]/table/tr/td/font/b').children.last.text
-    content = view_page.search('tt').first.text.split.join.gsub(/[　\s]+/, ' ')
-    issued_time = Time.parse(view_page.search('body').children[20].text.split[1..2].join)
+  def login!
+    login_page = @agent.get(BASE_URL)
+    login_form = login_page.forms[0]
+    login_form._ID = @id
+    login_form.Password = @password
+    @agent.submit(login_form)
+  end
 
-    notice = Notice.create(
-      id: id,
-      group_id: group_id,
-      title: title,
-      content: content,
-      issued_time: issued_time
-    )
+  def head_notice_urls
+    bulletin_url = BASE_URL + '?page=BulletinIndex'
+    bulletin_page = @agent.get(bulletin_url)
+    bulletin_page.search('table.dataList//a').map { |anchor| anchor[:href] }
+  end
 
-    TweetQueue.create(
-      notice_id: notice.id
-    )
+  class Parser
+    def initialize(notice_page)
+      @notice_page = notice_page
+    end
 
-    puts "New notice: #{notice.id}, #{notice.group_id}, #{notice.title}, #{notice.issued_time}"
+    def parse
+      id = /&bid=(\d+)/.match(@notice_page.uri.to_s)[1]
+      gid_match = /&gid=(\d+)/.match(@notice_page.uri.to_s)
+      group_id = gid_match ? gid_match[1] : 0
+      title = @notice_page.search('div[@class=marginFull]/table/tr/td/font/b').children.last.text
+      content = @notice_page.search('tt').first.text.split.join.gsub(/[　\s]+/, ' ')
+      issued_time = Time.parse(@notice_page.search('body').children[20].text.split[1..2].join)
+
+      { id: id, group_id: group_id, title: title, content: content, issued_time: issued_time }
+    end
   end
 end
+
+crawler = Crawler.new(
+  ENV['LOGIN_ID'],
+  ENV['LOGIN_PASSWORD']
+)
+crawler.crawl_head_notices
