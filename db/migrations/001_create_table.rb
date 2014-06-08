@@ -17,6 +17,7 @@ Sequel.migration do
     create_table(:tweet_queues) do
       primary_key :id
       foreign_key :notice_id, :notices
+      Time :tweet_at
     end
   end
 
