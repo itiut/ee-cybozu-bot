@@ -48,6 +48,7 @@ class Crawler
       notice = Notice.create(params)
       TweetQueue.create(notice_id: notice.id)
       puts "New notice: #{notice.id}, #{notice.group_id}, #{notice.title}, #{notice.issued_time}"
+      puts "New notice: #{notice.id}, #{notice.group_id}, #{notice.title}, #{notice.issued_at}"
     end
   end
 
@@ -62,10 +63,10 @@ class Crawler
       group_id = gid_match ? gid_match[1] : 0
       title = @notice_page.search('div[@class=marginFull]/table/tr/td/font/b').children.last.text
       content = @notice_page.search('tt').first.text.split.join.gsub(/[　\s]+/, ' ')
-      issued_time = Time.parse(@notice_page.search('body').children[20].text.split[1..2].join)
+      issued_at = Time.parse(@notice_page.search('body').children[20].text.split[1..2].join)
       url = @notice_page.uri.to_s
 
-      { id: id, group_id: group_id, title: title, content: content, issued_time: issued_time, url: url }
+      { id: id, group_id: group_id, title: title, content: content, issued_at: issued_at, url: url }
     end
   end
 end

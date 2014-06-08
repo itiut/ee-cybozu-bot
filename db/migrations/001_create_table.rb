@@ -10,7 +10,7 @@ Sequel.migration do
       foreign_key :group_id, :groups
       String :title
       String :content
-      Time :issued_time
+      Time :issued_at
       String :url
     end
 
