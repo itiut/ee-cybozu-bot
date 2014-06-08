@@ -1,12 +1,12 @@
 Sequel.migration do
   up do
     create_table(:groups) do
-      primary_key :id
+      Integer :id, primary_key: true
       String :name
     end
 
     create_table(:notices) do
-      primary_key :id
+      Integer :id, primary_key: true
       foreign_key :group_id, :groups
       String :title
       String :content
