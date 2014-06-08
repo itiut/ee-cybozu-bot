@@ -66,9 +66,3 @@ class Crawler
     end
   end
 end
-
-crawler = Crawler.new(
-  ENV['LOGIN_ID'],
-  ENV['LOGIN_PASSWORD']
-)
-crawler.crawl_head_notices

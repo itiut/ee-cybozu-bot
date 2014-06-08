@@ -39,6 +39,3 @@ class Tweeter
     puts "Tweet: #{message}"
   end
 end
-
-tweeter = Tweeter.new
-tweeter.tweet_queued_notices
