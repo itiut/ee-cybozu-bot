@@ -1,6 +1,12 @@
 require 'twitter'
+require_relative 'db/connection'
+require_relative 'models/group'
+require_relative 'models/notice'
+require_relative 'models/tweet_queue'
 
 class Tweeter
+  MESSAGE_MAX_CHARS = 105
+
   def initialize
     @client = Twitter::REST::Client.new do |config|
       config.consumer_key        = ENV['TWITTER_CONSUMER_KEY']
@@ -10,9 +16,27 @@ class Tweeter
     end
   end
 
+  def tweet_queued_notices
+    now = Time.new
+    TweetQueue.order(:tweet_at).all do |tweet|
+      next if now < tweet.tweet_at
+
+      notice = Notice[tweet.notice_id]
+      group = Group[notice.group_id]
+      message = [notice.title, '（', group.name, '）', notice.content].join.slice(0, MESSAGE_MAX_CHARS)
+
+      DB.transaction do
+        update(message + ' ' + notice.url)
+        tweet.delete
+      end
+    end
+  end
+
   def update(message)
+    puts "Tweet: #{message}"
     @client.update(message)
   end
 end
 
-Tweeter.new.update('botから投稿')
+tweeter = Tweeter.new
+tweeter.tweet_queued_notices
