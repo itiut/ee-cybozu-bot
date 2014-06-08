@@ -29,6 +29,8 @@ class Tweeter
         update(message + ' ' + notice.url)
         tweet.delete
       end
+
+      sleep 1
     end
   end
 
