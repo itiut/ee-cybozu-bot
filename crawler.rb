@@ -1,7 +1,4 @@
 require 'mechanize'
-require 'pry'
-require 'pry-byebug'
-require 'rb-readline'
 require_relative 'db/connection'
 require_relative 'models/notice'
 require_relative 'models/tweet_queue'
