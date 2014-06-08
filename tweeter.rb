@@ -35,8 +35,8 @@ class Tweeter
   end
 
   def update(message)
-    puts "Tweet: #{message}"
     @client.update(message)
+    puts "Tweet: #{message}"
   end
 end
 
