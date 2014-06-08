@@ -44,9 +44,11 @@ class Crawler
   end
 
   def create_notice_and_push_to_queue(params)
-    notice = Notice.create(params)
-    TweetQueue.create(notice_id: notice.id)
-    puts "New notice: #{notice.id}, #{notice.group_id}, #{notice.title}, #{notice.issued_time}"
+    DB.transaction do
+      notice = Notice.create(params)
+      TweetQueue.create(notice_id: notice.id)
+      puts "New notice: #{notice.id}, #{notice.group_id}, #{notice.title}, #{notice.issued_time}"
+    end
   end
 
   class Parser
