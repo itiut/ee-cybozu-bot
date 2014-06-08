@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 gem 'mechanize'
 gem 'mysql2'
 gem 'sequel'
+gem 'twitter'
 
 group :development do
   gem 'pry'
