@@ -21,4 +21,10 @@ namespace :db do
   task :down do
     migrate 0
   end
+
+  desc 'Reset migrations'
+  task :reset do
+    migrate 0
+    migrate
+  end
 end
