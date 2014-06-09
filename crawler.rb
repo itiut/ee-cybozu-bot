@@ -40,6 +40,8 @@ class Crawler
   def head_notice_urls
     bulletin_url = BASE_URL + '?page=BulletinIndex'
     bulletin_page = @agent.get(bulletin_url)
+    puts "Crawl: #{bulletin_url}"
+    p bulletin_page
     bulletin_page.search('table.dataList//a').map { |anchor| anchor[:href] }
   end
 
