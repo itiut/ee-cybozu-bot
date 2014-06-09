@@ -66,6 +66,8 @@ class Crawler
       puts "Parse: title=#{title}"
       content = @notice_page.search('tt').first.text.split.join.gsub(/[　\s]+/, ' ')
       puts "Parse: content=#{content}"
+      p "issued_at"
+      p @notice_page.search('body').children[15..25].map { |t| t.text }
       issued_at = Time.parse(@notice_page.search('body').children[20].text.split[1..2].join)
       puts "Parse: issued_at=#{issued_at.to_s}"
       url = @notice_page.uri.to_s
