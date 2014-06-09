@@ -19,6 +19,6 @@ module Clockwork
     puts 'End: tweeter_job'
   end
 
-  every(2.minutes, crawler_job)
+  every(1.hour, crawler_job)
   # every(1.hour, tweeter_job)
 end
