@@ -20,5 +20,5 @@ module Clockwork
   end
 
   every(1.hour, crawler_job)
-  # every(1.hour, tweeter_job)
+  every(1.hour, tweeter_job)
 end
