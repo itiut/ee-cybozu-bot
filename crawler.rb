@@ -15,9 +15,11 @@ class Crawler
 
   def crawl_head_notices
     head_notice_urls.each do |url|
+      puts "Crawl: #{url}"
       notice_page = @agent.get(url)
       params = Parser.new(notice_page).parse
 
+      p 'Parse:', params
       next if Notice[params[:id]]
 
       create_notice_and_push_to_queue(params)
@@ -32,6 +34,7 @@ class Crawler
     login_form._ID = @id
     login_form.Password = @password
     @agent.submit(login_form)
+    puts "Login:"
   end
 
   def head_notice_urls
