@@ -19,7 +19,6 @@ class Crawler
       notice_page = @agent.get(url)
       params = Parser.new(notice_page).parse
 
-      p 'Parse:', params
       next if Notice[params[:id]]
 
       create_notice_and_push_to_queue(params)
@@ -40,8 +39,7 @@ class Crawler
   def head_notice_urls
     bulletin_url = BASE_URL + '?page=BulletinIndex'
     bulletin_page = @agent.get(bulletin_url)
-    puts "Crawl: #{bulletin_url}"
-    p bulletin_page
+    puts "Crawl: #{bulletin_url}, #{bulletin_page.title}"
     bulletin_page.search('table.dataList//a').map { |anchor| anchor[:href] }
   end
 
@@ -60,12 +58,18 @@ class Crawler
 
     def parse
       id = /&bid=(\d+)/.match(@notice_page.uri.to_s)[1]
+      puts "Parse: id=#{id}"
       gid_match = /&gid=(\d+)/.match(@notice_page.uri.to_s)
       group_id = gid_match ? gid_match[1] : 0
+      puts "Parse: group_id=#{group_id}"
       title = @notice_page.search('div[@class=marginFull]/table/tr/td/font/b').children.last.text
+      puts "Parse: title=#{title}"
       content = @notice_page.search('tt').first.text.split.join.gsub(/[　\s]+/, ' ')
+      puts "Parse: content=#{content}"
       issued_at = Time.parse(@notice_page.search('body').children[20].text.split[1..2].join)
+      puts "Parse: issued_at=#{issued_at.to_s}"
       url = @notice_page.uri.to_s
+      puts "Parse: url=#{url}"
 
       { id: id, group_id: group_id, title: title, content: content, issued_at: issued_at, url: url }
     end
